@@ -9,12 +9,12 @@ The basic structure of this module is that it contains:
 *	The tabarray class.
 
 *	Some helper functions for tabarray.  The helper functions are precisely 
-	those necessary to wrap functions from the :mod:`tabular.spreadsheet` 
-	module that operate on lists of arrays, to handle tabular's additional 
-	structure.  These functions are named with the convention "tab_FNAME", e.g. 
-	"tab_rowstack", "tab_join" &c.  The functions in :mod:`tabular.spreadsheet` 
-	that only take a single array are all wrapped JUST as methods of tabarray, 
-	and not as separate functions.
+    those necessary to wrap functions from the :mod:`tabular.spreadsheet`
+    module that operate on lists of arrays, to handle tabular's additional
+    structure.  These functions are named with the convention "tab_FNAME", e.g.
+    "tab_rowstack", "tab_join" &c.  The functions in :mod:`tabular.spreadsheet`
+    that only take a single array are all wrapped JUST as methods of tabarray,
+    and not as separate functions.
 
 '''
 
@@ -27,9 +27,10 @@ import tabular.io as io
 import tabular.spreadsheet as spreadsheet
 import tabular.utils as utils
 
-__all__ = ['tabarray', 'tab_colstack', 'tab_rowstack','tab_join']
+__all__ = ['tabarray', 'tab_colstack', 'tab_rowstack', 'tab_join']
 
-DEFAULT_VERBOSITY=io.DEFAULT_VERBOSITY
+DEFAULT_VERBOSITY = io.DEFAULT_VERBOSITY
+
 
 def modifydocs(a, b, desc=''):
     """
@@ -67,6 +68,7 @@ def modifydocs(a, b, desc=''):
     newdoc += "Documentation from " + desc + ":\n" + b.func_doc
     return newdoc
 
+
 def tab_colstack(ListOfTabArrays, mode='abort'):
     """
     "Horizontal stacking" of tabarrays, e.g. adding columns.
@@ -79,12 +81,12 @@ def tab_colstack(ListOfTabArrays, mode='abort'):
         data = tabular.spreadsheet.colstack(ListOfTabArrays, mode=mode)
 
     """
-    (data, naming) = spreadsheet.colstack(ListOfTabArrays, mode=mode, 
+    (data, naming) = spreadsheet.colstack(ListOfTabArrays, mode=mode,
                                           returnnaming=True)
-        
+
     coloring = {}
     for (i, a) in enumerate(ListOfTabArrays):
-        namedict = dict([(x,y) for (j,x,y) in naming if i == j])
+        namedict = dict([(x, y) for (j, x, y) in naming if i == j])
         for k in a.coloring:
             s = [namedict[kk] for kk in a.coloring[k]]
             if k in coloring.keys():
@@ -102,8 +104,11 @@ def tab_colstack(ListOfTabArrays, mode='abort'):
     data = data.view(tabarray)
     data.coloring = coloring
     return data
-tab_colstack.func_doc = modifydocs(tab_colstack, spreadsheet.colstack, 
+
+
+tab_colstack.func_doc = modifydocs(tab_colstack, spreadsheet.colstack,
                                    ":func:`tabular.spreadsheet.colstack`")
+
 
 def tab_rowstack(ListOfTabArrays, mode='nulls'):
     """
@@ -136,10 +141,13 @@ def tab_rowstack(ListOfTabArrays, mode='nulls'):
     data = data.view(tabarray)
     data.coloring = coloring
     return data
-tab_rowstack.func_doc = modifydocs(tab_rowstack, spreadsheet.rowstack, 
+
+
+tab_rowstack.func_doc = modifydocs(tab_rowstack, spreadsheet.rowstack,
                                    ":func:`tabular.spreadsheet.rowstack`")
 
-def tab_join(ToMerge, keycols=None, nullvals=None, renamer=None, 
+
+def tab_join(ToMerge, keycols=None, nullvals=None, renamer=None,
              returnrenaming=False, Names=None):
     '''
     Database-join for tabular arrays.
@@ -153,22 +161,22 @@ def tab_join(ToMerge, keycols=None, nullvals=None, renamer=None,
 
     '''
 
-    [Result,Renaming] = spreadsheet.join(ToMerge, keycols=keycols, 
-          nullvals=nullvals, renamer=renamer, returnrenaming=True, Names=Names)
+    [Result, Renaming] = spreadsheet.join(ToMerge, keycols=keycols,
+                                          nullvals=nullvals, renamer=renamer, returnrenaming=True, Names=Names)
 
-    if isinstance(ToMerge,dict):
+    if isinstance(ToMerge, dict):
         Names = ToMerge.keys()
     else:
         Names = range(len(ToMerge))
 
-    Colorings = dict([(k,ToMerge[k].coloring) if 'coloring' in dir(ToMerge[k])  
-                                              else {} for k in Names])
+    Colorings = dict([(k, ToMerge[k].coloring) if 'coloring' in dir(ToMerge[k])
+                      else {} for k in Names])
     for k in Names:
         if k in Renaming.keys():
             l = ToMerge[k]
             Colorings[k] = \
-                dict([(g, [n if not n in Renaming[k].keys() else Renaming[k][n] 
-                       for n in l.coloring[g]]) for g in Colorings[k].keys()])
+                dict([(g, [n if not n in Renaming[k].keys() else Renaming[k][n]
+                           for n in l.coloring[g]]) for g in Colorings[k].keys()])
     Coloring = {}
     for k in Colorings.keys():
         for j in Colorings[k].keys():
@@ -181,7 +189,7 @@ def tab_join(ToMerge, keycols=None, nullvals=None, renamer=None,
     Result.coloring = Coloring
 
     if returnrenaming:
-        return [Result,Renaming]
+        return [Result, Renaming]
     else:
         return Result
 
@@ -205,18 +213,18 @@ class tabarray(np.ndarray):
     
     """
 
-    def __new__(subtype, array=None, records=None, columns=None, SVfile=None, 
-                binary=None, shape=None, 
-                dtype=None, formats=None, names=None, titles=None, 
-                aligned=False, byteorder=None, buf=None, offset = 0,
-                strides = None, comments=None, delimiter=None, 
-                lineterminator='\n', escapechar=None, quoting=None, 
+    def __new__(subtype, array=None, records=None, columns=None, SVfile=None,
+                binary=None, shape=None,
+                dtype=None, formats=None, names=None, titles=None,
+                aligned=False, byteorder=None, buf=None, offset=0,
+                strides=None, comments=None, delimiter=None,
+                lineterminator='\n', escapechar=None, quoting=None,
                 quotechar=None, doublequote=True, skipinitialspace=False,
                 skiprows=0, uselines=None, usecols=None, excludecols=None,
                 toload=None, metametadata=None, kvpairs=None,
-                namesinheader=True, headerlines=None, valuefixer=None, 
-                linefixer=None, colfixer = None, delimiter_regex = None, coloring=None, inflines=2500, wrap=None, 
-                typer = None, missingvalues = None, fillingvalues = None, renamer = None,verbosity=DEFAULT_VERBOSITY):
+                namesinheader=True, headerlines=None, valuefixer=None,
+                linefixer=None, colfixer=None, delimiter_regex=None, coloring=None, inflines=2500, wrap=None,
+                typer=None, missingvalues=None, fillingvalues=None, renamer=None, verbosity=DEFAULT_VERBOSITY):
         """
         Unified constructor for tabarrays.
 
@@ -449,43 +457,45 @@ class tabarray(np.ndarray):
         metadata = {}
         if not array is None:
             if len(array) > 0:
-                DataObj = utils.fromrecords(array, type=np.ndarray, dtype=dtype, 
-                          shape=shape, formats=formats, names=names, 
-                          titles=titles, aligned=aligned, byteorder=byteorder)
+                DataObj = utils.fromrecords(array, type=np.ndarray, dtype=dtype,
+                                            shape=shape, formats=formats, names=names,
+                                            titles=titles, aligned=aligned, byteorder=byteorder)
             else:
-                DataObj = utils.fromarrays([[]]*len(array.dtype), type=np.ndarray,
-                          dtype=dtype, shape=shape, formats=formats, 
-                          names=names, titles=titles, aligned=aligned, 
-                          byteorder=byteorder)
+                DataObj = utils.fromarrays([[]] * len(array.dtype), type=np.ndarray,
+                                           dtype=dtype, shape=shape, formats=formats,
+                                           names=names, titles=titles, aligned=aligned,
+                                           byteorder=byteorder)
         elif not records is None:
-            DataObj = utils.fromrecords(records, type=np.ndarray, dtype=dtype, shape=shape, 
-                      formats=formats, names=names, titles=titles, 
-                      aligned=aligned, byteorder=byteorder)
+            DataObj = utils.fromrecords(records, type=np.ndarray, dtype=dtype, shape=shape,
+                                        formats=formats, names=names, titles=titles,
+                                        aligned=aligned, byteorder=byteorder)
         elif not columns is None:
-            DataObj = utils.fromarrays(columns,type=np.ndarray, dtype=dtype,
-                      shape=shape, formats=formats, names=names, titles=titles, 
-                      aligned=aligned, byteorder=byteorder)
+            DataObj = utils.fromarrays(columns, type=np.ndarray, dtype=dtype,
+                                       shape=shape, formats=formats, names=names, titles=titles,
+                                       aligned=aligned, byteorder=byteorder)
         elif not kvpairs is None:
-        	DataObj = utils.fromkeypairs(kvpairs,dtype=dtype,fillingvalues=fillingvalues)
+            DataObj = utils.fromkeypairs(kvpairs, dtype=dtype, fillingvalues=fillingvalues)
         elif not SVfile is None:
             chkExists(SVfile)
             # The returned DataObj is a list of numpy arrays.
             [DataObj, metadata] = \
-                io.loadSV(fname=SVfile, names=names, dtype=dtype, shape=shape, 
-                formats=formats, titles=titles, aligned=aligned, 
-                byteorder=byteorder, buf=buf,strides=strides,
-                comments=comments, delimiter=delimiter, 
-                lineterminator=lineterminator, escapechar=escapechar,
-                quoting=quoting,quotechar=quotechar,doublequote=doublequote,
-                skipinitialspace=skipinitialspace, skiprows=skiprows, 
-                uselines=uselines, usecols=usecols, excludecols=excludecols, 
-                metametadata=metametadata, namesinheader=namesinheader, 
-                headerlines=headerlines, valuefixer=valuefixer, colfixer=colfixer, linefixer = linefixer, missingvalues = missingvalues, fillingvalues=fillingvalues, typer = typer, delimiter_regex = delimiter_regex, inflines=inflines, renamer=renamer,verbosity=verbosity)
+                io.loadSV(fname=SVfile, names=names, dtype=dtype, shape=shape,
+                          formats=formats, titles=titles, aligned=aligned,
+                          byteorder=byteorder, buf=buf, strides=strides,
+                          comments=comments, delimiter=delimiter,
+                          lineterminator=lineterminator, escapechar=escapechar,
+                          quoting=quoting, quotechar=quotechar, doublequote=doublequote,
+                          skipinitialspace=skipinitialspace, skiprows=skiprows,
+                          uselines=uselines, usecols=usecols, excludecols=excludecols,
+                          metametadata=metametadata, namesinheader=namesinheader,
+                          headerlines=headerlines, valuefixer=valuefixer, colfixer=colfixer, linefixer=linefixer,
+                          missingvalues=missingvalues, fillingvalues=fillingvalues, typer=typer,
+                          delimiter_regex=delimiter_regex, inflines=inflines, renamer=renamer, verbosity=verbosity)
             if (names is None) and 'names' in metadata.keys() and metadata['names']:
                 names = metadata['names']
             if (coloring is None) and 'coloring' in metadata.keys() and metadata['coloring']:
                 coloring = metadata['coloring']
-            
+
 
         elif not binary is None:
             chkExists(binary)
@@ -495,32 +505,32 @@ class tabarray(np.ndarray):
                 dtype = givendtype
             if (coloring is None) and (not givencoloring is None):
                 coloring = givencoloring
-            DataObj = utils.fromrecords(DataObj, type=np.ndarray, dtype=dtype, shape=shape,   
-                      formats=formats, names=names, titles=titles, 
-                      aligned=aligned, byteorder=byteorder)
+            DataObj = utils.fromrecords(DataObj, type=np.ndarray, dtype=dtype, shape=shape,
+                                        formats=formats, names=names, titles=titles,
+                                        aligned=aligned, byteorder=byteorder)
         else:
             DataObj = np.core.records.recarray.__new__(
-                      subtype, shape, dtype=dtype, 
-                      formats=formats, names=names, titles=titles, 
-                      aligned=aligned, byteorder=byteorder, buf=buf, 
-                      offset=offset, strides=strides)
-                      
+                subtype, shape, dtype=dtype,
+                formats=formats, names=names, titles=titles,
+                aligned=aligned, byteorder=byteorder, buf=buf,
+                offset=offset, strides=strides)
+
         DataObj = DataObj.view(subtype)
-        
+
         DataObj.metadata = metadata
 
         if not coloring is None:
             coloringsInNames = \
-                 list(set(coloring.keys()).intersection(set(DataObj.dtype.names)))
+                list(set(coloring.keys()).intersection(set(DataObj.dtype.names)))
             if len(coloringsInNames) == 0:
                 DataObj.coloring = coloring
             else:
-                print ("Warning:  the following coloring keys,", 
-                       coloringsInNames, ", are also attribute (column) names " 
-                       "in the tabarray.  This is not allowed, and so these " 
-                       "coloring keys will be deleted.  The corresponding "
-                       "columns of data will not be lost and will retain the "
-                       "same names.")
+                print("Warning:  the following coloring keys,",
+                      coloringsInNames, ", are also attribute (column) names "
+                                        "in the tabarray.  This is not allowed, and so these "
+                                        "coloring keys will be deleted.  The corresponding "
+                                        "columns of data will not be lost and will retain the "
+                                        "same names.")
                 for c in coloringsInNames:
                     coloring.pop(c)
                 DataObj.coloring = coloring
@@ -531,7 +541,7 @@ class tabarray(np.ndarray):
             DataObj.coloring[wrap] = DataObj.dtype.names
 
         return DataObj
-        
+
     def __array_finalize__(self, obj):
         """
         Set default attributes (e.g. `coloring`) if `obj` does not have them.
@@ -540,7 +550,7 @@ class tabarray(np.ndarray):
 
         """
         self.coloring = getattr(obj, 'coloring', {})
-        
+
     def __array_wrap__(self, arr, context=None):
         if arr.ndim == 0:
             pass
@@ -589,21 +599,21 @@ class tabarray(np.ndarray):
         """
         if ind in self.coloring.keys():
             return self[self.coloring[ind]]
-        elif isinstance(ind,list) and self.dtype.names and \
-             all([a in self.dtype.names or a in self.coloring.keys() 
-                                                           for a in ind]) and \
-             set(self.coloring.keys()).intersection(ind):
-            ns = utils.uniqify(utils.listunion([[a] if a in self.dtype.names 
-                                          else self.coloring[a] for a in ind]))
+        elif isinstance(ind, list) and self.dtype.names and \
+            all([a in self.dtype.names or a in self.coloring.keys()
+                 for a in ind]) and \
+            set(self.coloring.keys()).intersection(ind):
+            ns = utils.uniqify(utils.listunion([[a] if a in self.dtype.names
+                                                else self.coloring[a] for a in ind]))
             return self[ns]
         else:
             D = np.ndarray.__getitem__(self, ind)
             if isinstance(D, np.ndarray) and not (D.dtype.names is None):
                 D = D.view(tabarray)
-                D.coloring = dict([(k, 
-                list(set(self.coloring[k]).intersection(set(D.dtype.names)))) 
-                for k in self.coloring.keys() if 
-                len(set(self.coloring[k]).intersection(set(D.dtype.names))) > 0 ])
+                D.coloring = dict([(k,
+                                    list(set(self.coloring[k]).intersection(set(D.dtype.names))))
+                                   for k in self.coloring.keys() if
+                                   len(set(self.coloring[k]).intersection(set(D.dtype.names))) > 0])
             return D
 
     def addrecords(self, new):
@@ -615,11 +625,12 @@ class tabarray(np.ndarray):
                 tabular.spreadsheet.addrecords(self, new)
 
         """
-        data = spreadsheet.addrecords(self,new)
+        data = spreadsheet.addrecords(self, new)
         data = data.view(tabarray)
         data.coloring = self.coloring
         return data
-    addrecords.func_doc = modifydocs(addrecords, spreadsheet.addrecords, 
+
+    addrecords.func_doc = modifydocs(addrecords, spreadsheet.addrecords,
                                      ":func:`tabular.spreadsheet.addrecords`")
 
     def addcols(self, cols, names=None):
@@ -635,7 +646,8 @@ class tabarray(np.ndarray):
         data = data.view(tabarray)
         data.coloring = self.coloring
         return data
-    addcols.func_doc = modifydocs(addcols, spreadsheet.addcols, 
+
+    addcols.func_doc = modifydocs(addcols, spreadsheet.addcols,
                                   ":func:`tabular.spreadsheet.addcols`")
 
     def deletecols(self, cols):
@@ -648,11 +660,12 @@ class tabarray(np.ndarray):
 
         """
         if isinstance(cols, str):
-        	cols = cols.split(',')
-        deletenames = utils.uniqify(utils.listunion([[c] if c in 
-        self.dtype.names else self.coloring[c] for c in cols]))
-        return spreadsheet.deletecols(self,deletenames)
-    deletecols.func_doc = modifydocs(deletecols, spreadsheet.deletecols, 
+            cols = cols.split(',')
+        deletenames = utils.uniqify(utils.listunion([[c] if c in
+                                                            self.dtype.names else self.coloring[c] for c in cols]))
+        return spreadsheet.deletecols(self, deletenames)
+
+    deletecols.func_doc = modifydocs(deletecols, spreadsheet.deletecols,
                                      ":func:`tabular.spreadsheet.deletecols`")
 
     def renamecol(self, old, new):
@@ -664,19 +677,20 @@ class tabarray(np.ndarray):
                 tabular.spreadsheet.renamecol(self, old, new)
 
         """
-        spreadsheet.renamecol(self,old,new)
+        spreadsheet.renamecol(self, old, new)
         for x in self.coloring.keys():
             if old in self.coloring[x]:
                 ind = self.coloring[x].index(old)
                 self.coloring[x][ind] = new
-    renamecol.func_doc = modifydocs(renamecol, spreadsheet.renamecol, 
+
+    renamecol.func_doc = modifydocs(renamecol, spreadsheet.renamecol,
                                     ":func:`tabular.spreadsheet.renamecol`")
 
     def saveSV(self, fname, comments=None, metadata=None, printmetadict=None,
-                       dialect = None, delimiter=None, doublequote=True, 
-                       lineterminator='\n', escapechar = None, quoting=csv.QUOTE_MINIMAL, 
-                       quotechar='"', skipinitialspace=False, 
-                       stringifier=None, verbosity=DEFAULT_VERBOSITY):
+               dialect=None, delimiter=None, doublequote=True,
+               lineterminator='\n', escapechar=None, quoting=csv.QUOTE_MINIMAL,
+               quotechar='"', skipinitialspace=False,
+               stringifier=None, verbosity=DEFAULT_VERBOSITY):
         """
         Save the tabarray to a single flat separated variable (CSV) text file.   
         
@@ -687,10 +701,11 @@ class tabarray(np.ndarray):
         See docstring of tabular.io.saveSV, or Tabular reference documentation,  for more information.        
 
         """
-        io.saveSV(fname,self, comments, metadata, printmetadict, 
-                        dialect, delimiter, doublequote, lineterminator, escapechar, quoting, quotechar,skipinitialspace,stringifier=stringifier,verbosity=verbosity)
-                        
-    saveSV.func_doc = modifydocs(saveSV, io.saveSV, 
+        io.saveSV(fname, self, comments, metadata, printmetadict,
+                  dialect, delimiter, doublequote, lineterminator, escapechar, quoting, quotechar, skipinitialspace,
+                  stringifier=stringifier, verbosity=verbosity)
+
+    saveSV.func_doc = modifydocs(saveSV, io.saveSV,
                                  ":func:`tabular.io.saveSV`")
 
     def savebinary(self, fname, savecoloring=True):
@@ -707,7 +722,8 @@ class tabarray(np.ndarray):
 
         """
         io.savebinary(fname=fname, X=self, savecoloring=savecoloring)
-    savebinary.func_doc = modifydocs(savebinary, io.savebinary, 
+
+    savebinary.func_doc = modifydocs(savebinary, io.savebinary,
                                      ":func:`tabular.io.savebinary`")
 
     def colstack(self, new, mode='abort'):
@@ -722,12 +738,12 @@ class tabarray(np.ndarray):
                 :func:`tabular.spreadsheet.colstack`
 
         """
-        if isinstance(new,list):
-            return tab_colstack([self] + new,mode)
+        if isinstance(new, list):
+            return tab_colstack([self] + new, mode)
         else:
             return tab_colstack([self, new], mode)
 
-    colstack.func_doc = modifydocs(colstack, spreadsheet.colstack,  
+    colstack.func_doc = modifydocs(colstack, spreadsheet.colstack,
                                    ":func:`tabular.spreadsheet.colstack`")
 
     def rowstack(self, new, mode='nulls'):
@@ -742,16 +758,15 @@ class tabarray(np.ndarray):
                 :func:`tabular.spreadsheet.rowstack`
 
         """
-        if isinstance(new,list):
+        if isinstance(new, list):
             return tab_rowstack([self] + new, mode)
         else:
             return tab_rowstack([self, new], mode)
 
-    rowstack.func_doc = modifydocs(rowstack, spreadsheet.rowstack, 
+    rowstack.func_doc = modifydocs(rowstack, spreadsheet.rowstack,
                                    ":func:`tabular.spreadsheet.rowstack`")
 
-    def aggregate(self, On=None, AggFuncDict=None, AggFunc=None, AggList =
-                  None, returnsort=False,KeepOthers=True, keyfuncdict=None):
+    def aggregate(self, On=None, AggFuncDict=None, AggFunc=None, AggList=None, returnsort=False, KeepOthers=True, keyfuncdict=None):
         """
         Aggregate a tabarray on columns for given functions.
 
@@ -761,29 +776,30 @@ class tabarray(np.ndarray):
 
         """
         if returnsort:
-            [data, s] = spreadsheet.aggregate(X=self, 
-                     On=On, 
-                     AggFuncDict=AggFuncDict, 
-                     AggFunc=AggFunc, 
-                     AggList=AggList, 
-                     returnsort=returnsort, 
-                     keyfuncdict=keyfuncdict)
+            [data, s] = spreadsheet.aggregate(X=self,
+                                              On=On,
+                                              AggFuncDict=AggFuncDict,
+                                              AggFunc=AggFunc,
+                                              AggList=AggList,
+                                              returnsort=returnsort,
+                                              keyfuncdict=keyfuncdict)
         else:
-            data = spreadsheet.aggregate(X=self, On=On, AggFuncDict=AggFuncDict, 
-                     AggFunc=AggFunc, AggList = AggList, returnsort=returnsort, 
-                     KeepOthers=KeepOthers,
-                     keyfuncdict=keyfuncdict)
+            data = spreadsheet.aggregate(X=self, On=On, AggFuncDict=AggFuncDict,
+                                         AggFunc=AggFunc, AggList=AggList, returnsort=returnsort,
+                                         KeepOthers=KeepOthers,
+                                         keyfuncdict=keyfuncdict)
         data = data.view(tabarray)
         data.coloring = self.coloring
         if returnsort:
             return [data, s]
         else:
             return data
-    aggregate.func_doc = modifydocs(aggregate, spreadsheet.aggregate, 
+
+    aggregate.func_doc = modifydocs(aggregate, spreadsheet.aggregate,
                                     ":func:`tabular.spreadsheet.aggregate`")
 
     def aggregate_in(self, On=None, AggFuncDict=None, AggFunc=None,
-                 AggList=None, interspersed=True):
+                     AggList=None, interspersed=True):
         """
         Aggregate a tabarray and include original data in the result.
 
@@ -794,17 +810,17 @@ class tabarray(np.ndarray):
                 tabular.summarize.aggregate_in(self, On, AggFuncDict, AggFunc, interspersed)
 
         """
-        data = spreadsheet.aggregate_in(Data=self, On=On, 
-               AggFuncDict=AggFuncDict, AggFunc=AggFunc, 
-               AggList = AggList, interspersed=interspersed)
+        data = spreadsheet.aggregate_in(Data=self, On=On,
+                                        AggFuncDict=AggFuncDict, AggFunc=AggFunc,
+                                        AggList=AggList, interspersed=interspersed)
         data = data.view(tabarray)
         data.view = self.coloring
         return data
 
-    aggregate_in.func_doc = modifydocs(aggregate_in, spreadsheet.aggregate_in,  
-                                    ":func:`tabular.spreadsheet.aggregate_in`")
+    aggregate_in.func_doc = modifydocs(aggregate_in, spreadsheet.aggregate_in,
+                                       ":func:`tabular.spreadsheet.aggregate_in`")
 
-    def pivot(self, a, b, Keep=None, NullVals=None, order = None, prefix='_'):
+    def pivot(self, a, b, Keep=None, NullVals=None, order=None, prefix='_'):
         """
         Pivot with `a` as the row axis and `b` values as the column axis.
 
@@ -813,30 +829,30 @@ class tabarray(np.ndarray):
                 tabular.spreadsheet.pivot(X, a, b, Keep)
 
         """
-        [data,coloring] = spreadsheet.pivot(X=self, a=a, b=b, Keep=Keep, 
-                          NullVals=NullVals, order=order, prefix=prefix)
+        [data, coloring] = spreadsheet.pivot(X=self, a=a, b=b, Keep=Keep,
+                                             NullVals=NullVals, order=order, prefix=prefix)
         data = data.view(tabarray)
         data.coloring = coloring
         return data
 
-    pivot.func_doc = modifydocs(pivot, spreadsheet.pivot, 
+    pivot.func_doc = modifydocs(pivot, spreadsheet.pivot,
                                 ":func:`tabular.spreadsheet.pivot`")
 
     def replace(self, old, new, strict=True, cols=None, rows=None):
-    	"""
-    	Replace `old` with `new` in the rows `rows` of columns `cols`.
-    	
-    	Method wraps::
-    	
-    	        tabular.spreadsheet.replace(self, old, new, strict, cols, rows)
-    	
-    	"""
+        """
+        Replace `old` with `new` in the rows `rows` of columns `cols`.
+
+        Method wraps::
+
+            tabular.spreadsheet.replace(self, old, new, strict, cols, rows)
+
+        """
         spreadsheet.replace(self, old, new, strict, cols, rows)
 
     replace.func_doc = modifydocs(replace, spreadsheet.replace,
                                   ":func:`tabular.spreadsheet.replace`")
 
-    def join(self, ToMerge, keycols=None, nullvals=None, 
+    def join(self, ToMerge, keycols=None, nullvals=None,
              renamer=None, returnrenaming=False, selfname=None, Names=None):
         """
         Wrapper for spreadsheet.join, but handles coloring attributes.
@@ -847,24 +863,24 @@ class tabarray(np.ndarray):
         **See also:** :func:`tabular.spreadsheet.join`, :func:`tab_join`
         """
 
-        if isinstance(ToMerge,np.ndarray):
+        if isinstance(ToMerge, np.ndarray):
             ToMerge = [ToMerge]
 
-        if isinstance(ToMerge,dict):
+        if isinstance(ToMerge, dict):
             assert selfname not in ToMerge.keys(), \
-             ('Can\'t use "', selfname + '" for name of one of the things to '  
-              'merge, since it is the same name as the self object.')
+                ('Can\'t use "', selfname + '" for name of one of the things to '
+                                            'merge, since it is the same name as the self object.')
             if selfname == None:
                 try:
                     selfname = self.name
                 except AttributeError:
                     selfname = 'self'
-            ToMerge.update({selfname:self})
+            ToMerge.update({selfname: self})
         else:
             ToMerge = [self] + ToMerge
 
-        return tab_join(ToMerge, keycols=keycols, nullvals=nullvals, 
-                   renamer=renamer, returnrenaming=returnrenaming, Names=Names)
+        return tab_join(ToMerge, keycols=keycols, nullvals=nullvals,
+                        renamer=renamer, returnrenaming=returnrenaming, Names=Names)
 
     def argsort(self, axis=-1, kind='quicksort', order=None):
         """
@@ -931,12 +947,13 @@ class tabarray(np.ndarray):
                         array([0, 1])
 
         """
-        index_array = np.core.fromnumeric._wrapit(self, 'argsort', axis, 
-                                                     kind, order)
+        index_array = np.core.fromnumeric._wrapit(self, 'argsort', axis,
+                                                  kind, order)
         index_array = index_array.view(np.ndarray)
         return index_array
 
-def chkExists( path ):
+
+def chkExists(path):
     """If the given file or directory does not exist, raise an exception"""
-    if not os.path.exists(path): 
+    if not os.path.exists(path):
         raise IOError("Directory or file %s does not exist" % path)
