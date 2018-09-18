@@ -7,7 +7,6 @@ binary files.
 
 import types
 import csv
-import cPickle
 import os
 import shutil
 import compiler
